@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDfQe8kNi3dw4lU1HRFwY_uyPI2UQAMBkrgMTtMJ2ke-oZjGQrkSlQZT_NiZiAuW8/exec";
 
 let video = document.getElementById("video");
 let canvas = document.getElementById("canvas");
