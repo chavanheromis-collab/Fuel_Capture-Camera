@@ -9,16 +9,70 @@ let cameraReady = false;
 let latitude = "";
 let longitude = "";
 let accuracy = "";
+let currentRow = "";
+
+window.onload = function () {
+  checkRowBeforeOpen();
+};
+
+function getRowFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("row");
+}
+
+async function checkRowBeforeOpen() {
+  currentRow = getRowFromUrl();
+
+  if (!currentRow) {
+    statusBox.innerText = "Invalid link. Row number missing.";
+    disableButtons();
+    return;
+  }
+
+  statusBox.innerText = "Checking row availability...";
+
+  try {
+    const response = await fetch(
+      APPS_SCRIPT_URL + "?action=checkPhotoRow&row=" + encodeURIComponent(currentRow)
+    );
+
+    const result = await response.json();
+
+    if (!result.success) {
+      statusBox.innerText = "Cannot open camera: " + result.error;
+      disableButtons();
+      return;
+    }
+
+    statusBox.innerText =
+      "Row found. Chessis NO: " + result.chessisNo + ". Click Open Camera.";
+
+    enableButtons();
+
+  } catch (err) {
+    statusBox.innerText = "Row check failed: " + err.message;
+    disableButtons();
+  }
+}
+
+function disableButtons() {
+  document.querySelectorAll("button").forEach(btn => {
+    btn.disabled = true;
+    btn.style.opacity = "0.5";
+  });
+}
+
+function enableButtons() {
+  document.querySelectorAll("button").forEach(btn => {
+    btn.disabled = false;
+    btn.style.opacity = "1";
+  });
+}
 
 async function startCamera() {
   statusBox.innerText = "Requesting camera permission...";
 
   try {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      statusBox.innerText = "Camera not supported. Use Chrome on Android mobile.";
-      return;
-    }
-
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: { ideal: "environment" }
@@ -42,11 +96,6 @@ async function startCamera() {
 function getLocation() {
   statusBox.innerText = "Requesting location permission...";
 
-  if (!navigator.geolocation) {
-    statusBox.innerText = "GPS not supported.";
-    return;
-  }
-
   navigator.geolocation.getCurrentPosition(
     function(position) {
       latitude = position.coords.latitude;
@@ -68,13 +117,18 @@ function getLocation() {
 }
 
 async function captureAndUpload() {
+  if (!currentRow) {
+    statusBox.innerText = "Row missing.";
+    return;
+  }
+
   if (!cameraReady || !video.videoWidth || !video.videoHeight) {
-    statusBox.innerText = "Camera not ready. Click Open Camera first.";
+    statusBox.innerText = "Camera not ready.";
     return;
   }
 
   if (!latitude || !longitude) {
-    statusBox.innerText = "Location not ready. Click Get Location first.";
+    statusBox.innerText = "Location not ready.";
     return;
   }
 
@@ -84,7 +138,6 @@ async function captureAndUpload() {
   const ctx = canvas.getContext("2d");
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  // Watermark timestamp + GPS on photo
   const now = new Date().toLocaleString();
 
   ctx.fillStyle = "rgba(0,0,0,0.6)";
@@ -97,9 +150,11 @@ async function captureAndUpload() {
 
   const imageData = canvas.toDataURL("image/jpeg", 0.85);
 
-  statusBox.innerText = "Uploading photo...";
+  statusBox.innerText = "Uploading photo to same row...";
 
   const payload = {
+    action: "savePhotoToRow",
+    row: currentRow,
     image: imageData,
     latitude: latitude,
     longitude: longitude,
@@ -116,10 +171,10 @@ async function captureAndUpload() {
     const result = await response.json();
 
     if (result.success) {
-      statusBox.innerText = "Photo uploaded successfully.";
+      statusBox.innerText = "Photo saved in row " + result.row;
 
       resultBox.innerHTML =
-        "✅ Saved<br><br>" +
+        "✅ Saved in same row<br><br>" +
         "<a href='" + result.photoUrl + "' target='_blank'>Open Photo</a><br><br>" +
         "<a href='" + result.mapLink + "' target='_blank'>Open Location</a>";
     } else {
