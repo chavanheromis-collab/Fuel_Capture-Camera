@@ -1,1 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Realtime Photo Capture</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>Realtime Photo Capture</h2>
+
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <button onclick="startCamera()">Open Camera</button>
+    <button onclick="getLocation()">Get Location</button>
+    <button onclick="captureAndUpload()">Capture & Upload</button>
+
+    <p id="status">Click Open Camera</p>
+
+    <div id="result"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
