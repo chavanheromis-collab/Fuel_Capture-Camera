@@ -116,6 +116,7 @@ function getLocation() {
   );
 }
 
+
 async function captureAndUpload() {
   if (!currentRow) {
     statusBox.innerText = "Row missing.";
@@ -136,19 +137,41 @@ async function captureAndUpload() {
   canvas.height = video.videoHeight;
 
   const ctx = canvas.getContext("2d");
+
+  // Capture frame
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   const now = new Date().toLocaleString();
 
+  // Black overlay
   ctx.fillStyle = "rgba(0,0,0,0.6)";
   ctx.fillRect(0, canvas.height - 90, canvas.width, 90);
 
+  // Timestamp + GPS
   ctx.fillStyle = "#ffffff";
   ctx.font = "22px Arial";
   ctx.fillText("Time: " + now, 20, canvas.height - 55);
   ctx.fillText("GPS: " + latitude + ", " + longitude, 20, canvas.height - 25);
 
+  // Convert to image
   const imageData = canvas.toDataURL("image/jpeg", 0.85);
+
+  // =========================
+  // SHOW CAPTURED IMAGE
+  // =========================
+
+  const capturedPhoto = document.getElementById("capturedPhoto");
+
+  capturedPhoto.src = imageData;
+  capturedPhoto.style.display = "block";
+
+  // Hide live camera
+  video.style.display = "none";
+
+  // Stop camera stream completely
+  if (video.srcObject) {
+    video.srcObject.getTracks().forEach(track => track.stop());
+  }
 
   statusBox.innerText = "Uploading photo to same row...";
 
@@ -177,6 +200,7 @@ async function captureAndUpload() {
         "✅ Saved in same row<br><br>" +
         "<a href='" + result.photoUrl + "' target='_blank'>Open Photo</a><br><br>" +
         "<a href='" + result.mapLink + "' target='_blank'>Open Location</a>";
+
     } else {
       statusBox.innerText = "Upload error: " + result.error;
     }
