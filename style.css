@@ -175,3 +175,16 @@ a {
 
   text-decoration: none;
 }
+
+#kmInput {
+
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  box-sizing: border-box;
+
+  font-size: 18px;
+
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
