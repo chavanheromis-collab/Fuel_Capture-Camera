@@ -39,6 +39,8 @@ let currentStage = "start";
 
 let currentRequestType = "";
 
+let enteredKm = "";
+
 // ======================================================
 // ON LOAD
 // ======================================================
@@ -113,6 +115,32 @@ function updateStageUI() {
     "Current Stage: <b>" +
     currentStage.toUpperCase() +
     "</b>";
+
+
+
+  const kmInput =
+    document.getElementById("kmInput");
+
+  if (currentStage === "start") {
+
+    kmInput.style.display = "block";
+
+    kmInput.placeholder =
+      "Enter Start KM";
+
+  }
+  else if (currentStage === "return") {
+
+    kmInput.style.display = "block";
+
+    kmInput.placeholder =
+      "Enter Return KM";
+
+  }
+  else {
+
+    kmInput.style.display = "none";
+  }
 }
 
 // ======================================================
@@ -178,13 +206,15 @@ async function checkRowBeforeOpen() {
       === "organisation"
     ) {
 
+      // Disable only REACH
+
       document
         .querySelectorAll(".stage-btn")[1]
         .disabled = true;
 
       document
         .querySelectorAll(".stage-btn")[2]
-        .disabled = true;
+        .disabled = false;
     }
 
     enableButtons();
@@ -247,6 +277,13 @@ function enableButtons() {
 
 function resetUI() {
 
+  const kmInput =
+    document.getElementById("kmInput");
+
+  if (kmInput) {
+    kmInput.value = "";
+  }
+
   capturedPhoto.style.display = "none";
 
   video.style.display = "block";
@@ -265,6 +302,26 @@ function resetUI() {
 // ======================================================
 
 async function startCamera() {
+
+  const kmInput =
+    document.getElementById("kmInput");
+
+  if (
+    currentStage === "start" ||
+    currentStage === "return"
+  ) {
+
+    enteredKm =
+      kmInput.value.trim();
+
+    if (!enteredKm) {
+
+      statusBox.innerText =
+        "Please enter KM reading first.";
+
+      return;
+    }
+  }
 
   statusBox.innerText =
     "Requesting camera permission...";
@@ -495,6 +552,8 @@ async function captureAndUpload() {
     row: currentRow,
 
     stage: currentStage,
+
+    km: enteredKm,
 
     image: imageData,
 
