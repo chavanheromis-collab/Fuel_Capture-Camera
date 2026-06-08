@@ -41,6 +41,9 @@ let currentRequestType = "";
 
 let enteredKm = "";
 
+let capturedImageData = "";
+let uploadCompleted = false;
+
 // ======================================================
 // ON LOAD
 // ======================================================
@@ -403,6 +406,28 @@ function getLocation() {
   );
 }
 
+
+// Retake Function ======================================
+
+async function retakePhoto() {
+
+  if (uploadCompleted) {
+    return;
+  }
+
+  capturedPhoto.style.display = "none";
+  video.style.display = "block";
+
+  capturedImageData = "";
+
+  document.getElementById("retakeBtn").disabled = true;
+
+  await startCamera();
+
+  statusBox.innerText =
+    "Retake photo and upload again.";
+}
+
 // ======================================================
 // CAPTURE + UPLOAD
 // ======================================================
@@ -524,6 +549,9 @@ async function captureAndUpload() {
   video.style.display =
     "none";
 
+
+  document.getElementById("retakeBtn").disabled = false;
+
   // ====================================================
   // STOP CAMERA
   // ====================================================
@@ -580,6 +608,10 @@ async function captureAndUpload() {
       await response.json();
 
     if (result.success) {
+
+      uploadCompleted = true;
+
+      document.getElementById("retakeBtn").disabled = true;
 
       statusBox.innerText =
         currentStage.toUpperCase() +
