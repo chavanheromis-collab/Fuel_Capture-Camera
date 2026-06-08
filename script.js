@@ -44,7 +44,7 @@ let enteredKm = "";
 let capturedImageData = "";
 let uploadCompleted = false;
 
-let capturedImageData = "";
+
 
 // ======================================================
 // ON LOAD
@@ -244,17 +244,11 @@ async function checkRowBeforeOpen() {
 
 function disableButtons() {
 
-  document
-    .getElementById("cameraBtn")
-    .disabled = true;
+  document.getElementById("openBtn").disabled = true;
 
-  document
-    .getElementById("locationBtn")
-    .disabled = true;
+  document.getElementById("captureBtn").disabled = true;
 
-  document
-    .getElementById("uploadBtn")
-    .disabled = true;
+  document.getElementById("uploadBtn").disabled = true;
 }
 
 // ======================================================
@@ -263,17 +257,11 @@ function disableButtons() {
 
 function enableButtons() {
 
-  document
-    .getElementById("cameraBtn")
-    .disabled = false;
+  document.getElementById("openBtn").disabled = false;
 
-  document
-    .getElementById("locationBtn")
-    .disabled = false;
+  document.getElementById("captureBtn").disabled = true;
 
-  document
-    .getElementById("uploadBtn")
-    .disabled = false;
+  document.getElementById("uploadBtn").disabled = true;
 }
 
 // ======================================================
@@ -318,7 +306,6 @@ async function startCameraAndLocation() {
 
 async function startCamera() {
 
-  getLocation();
 
   const kmInput =
     document.getElementById("kmInput");
@@ -369,7 +356,7 @@ async function startCamera() {
         false;
 
       statusBox.innerText =
-        "Camera ready. Click Get Location.";
+            "Camera ready. Take Photo.";
     };
 
   } catch (err) {
@@ -442,6 +429,12 @@ async function retakePhoto() {
 
   document.getElementById("uploadBtn")
     .disabled = true;
+
+  document.getElementById("captureBtn").innerText =
+    "Take Photo";
+  
+  document.getElementById("captureBtn").onclick =
+    capturePhoto;
 
   await startCamera();
 
@@ -583,7 +576,7 @@ async function capturePhoto() {
   document.getElementById("uploadBtn").disabled =
     false;
     
-  document.getElementById("retakeBtn").disabled = false;
+  
 
   // ====================================================
   // STOP CAMERA
@@ -602,7 +595,7 @@ async function capturePhoto() {
     currentStage.toUpperCase() +
     " image...";
 
-  document.getElementById("retakeBtn").disabled = false;
+  
 
   document.getElementById("uploadBtn").disabled = false;
 
