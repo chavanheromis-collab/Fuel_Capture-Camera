@@ -44,6 +44,8 @@ let enteredKm = "";
 let capturedImageData = "";
 let uploadCompleted = false;
 
+let capturedImageData = "";
+
 // ======================================================
 // ON LOAD
 // ======================================================
@@ -300,11 +302,23 @@ function resetUI() {
   cameraReady = false;
 }
 
+
+
+async function startCameraAndLocation() {
+
+  getLocation();
+
+  await startCamera();
+}
+
+
 // ======================================================
 // START CAMERA
 // ======================================================
 
 async function startCamera() {
+
+  getLocation();
 
   const kmInput =
     document.getElementById("kmInput");
@@ -350,6 +364,9 @@ async function startCamera() {
       video.play();
 
       cameraReady = true;
+
+      document.getElementById("captureBtn").disabled =
+        false;
 
       statusBox.innerText =
         "Camera ready. Click Get Location.";
@@ -417,19 +434,22 @@ async function retakePhoto() {
 
   capturedImageData = "";
 
-  capturedPhoto.style.display = "none";
+  capturedPhoto.style.display =
+    "none";
 
-  video.style.display = "block";
+  video.style.display =
+    "block";
 
-  document.getElementById("retakeBtn").disabled = true;
-
-  document.getElementById("uploadBtn").disabled = true;
+  document.getElementById("uploadBtn")
+    .disabled = true;
 
   await startCamera();
 
   statusBox.innerText =
     "Take another photo.";
 }
+
+
 
 // ======================================================
 // CAPTURE + UPLOAD
@@ -554,7 +574,15 @@ async function capturePhoto() {
   video.style.display =
     "none";
 
+  document.getElementById("captureBtn").innerText =
+    "Retake Photo";
 
+  document.getElementById("captureBtn").onclick =
+    retakePhoto;
+
+  document.getElementById("uploadBtn").disabled =
+    false;
+    
   document.getElementById("retakeBtn").disabled = false;
 
   // ====================================================
@@ -588,13 +616,10 @@ async function uploadPhoto() {
   if (!capturedImageData) {
 
     statusBox.innerText =
-      "Capture photo first.";
+      "Take photo first.";
 
     return;
   }
-
-  statusBox.innerText =
-    "Uploading image...";
 
   const payload = {
 
@@ -617,13 +642,17 @@ async function uploadPhoto() {
 
   try {
 
-    const response = await fetch(
-      APPS_SCRIPT_URL,
-      {
-        method: "POST",
-        body: JSON.stringify(payload)
-      }
-    );
+    statusBox.innerText =
+      "Uploading...";
+
+    const response =
+      await fetch(
+        APPS_SCRIPT_URL,
+        {
+          method: "POST",
+          body: JSON.stringify(payload)
+        }
+      );
 
     const result =
       await response.json();
@@ -632,42 +661,17 @@ async function uploadPhoto() {
 
       uploadCompleted = true;
 
-      document.getElementById("captureBtn").disabled = true;
+      document.getElementById("openBtn")
+        .disabled = true;
 
-      document.getElementById("retakeBtn").disabled = true;
+      document.getElementById("captureBtn")
+        .disabled = true;
 
-      document.getElementById("uploadBtn").disabled = true;
+      document.getElementById("uploadBtn")
+        .disabled = true;
 
       statusBox.innerText =
-        currentStage.toUpperCase() +
-        " uploaded successfully";
-
-      let html = "";
-
-      html += "<div class='success-box'>";
-
-      html += "<h3>Upload Success</h3>";
-
-      html +=
-        "<p><b>Stage:</b> " +
-        currentStage.toUpperCase() +
-        "</p>";
-
-      html +=
-        "<a href='" +
-        result.photoUrl +
-        "' target='_blank'>Open Photo</a>";
-
-      html += "<br><br>";
-
-      html +=
-        "<a href='" +
-        result.mapLink +
-        "' target='_blank'>Open Location</a>";
-
-      html += "</div>";
-
-      resultBox.innerHTML = html;
+        "Upload successful";
 
     } else {
 
