@@ -188,3 +188,19 @@ a {
   border: 1px solid #ccc;
   border-radius: 10px;
 }
+
+.photo-actions {
+
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 12px;
+}
+
+.photo-actions button {
+
+  flex: 1;
+
+  margin-top: 0;
+}
