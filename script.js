@@ -415,24 +415,27 @@ async function retakePhoto() {
     return;
   }
 
-  capturedPhoto.style.display = "none";
-  video.style.display = "block";
-
   capturedImageData = "";
 
+  capturedPhoto.style.display = "none";
+
+  video.style.display = "block";
+
   document.getElementById("retakeBtn").disabled = true;
+
+  document.getElementById("uploadBtn").disabled = true;
 
   await startCamera();
 
   statusBox.innerText =
-    "Retake photo and upload again.";
+    "Take another photo.";
 }
 
 // ======================================================
 // CAPTURE + UPLOAD
 // ======================================================
 
-async function captureAndUpload() {
+async function capturePhoto() {
 
   if (!currentRow) {
 
@@ -536,6 +539,8 @@ async function captureAndUpload() {
       0.85
     );
 
+  capturedImageData = imageData;
+
   // ====================================================
   // SHOW IMAGE
   // ====================================================
@@ -569,9 +574,27 @@ async function captureAndUpload() {
     currentStage.toUpperCase() +
     " image...";
 
-  // ====================================================
-  // PAYLOAD
-  // ====================================================
+  document.getElementById("retakeBtn").disabled = false;
+
+  document.getElementById("uploadBtn").disabled = false;
+
+  statusBox.innerText =
+    "Photo captured. Review and upload.";
+  }
+
+
+async function uploadPhoto() {
+
+  if (!capturedImageData) {
+
+    statusBox.innerText =
+      "Capture photo first.";
+
+    return;
+  }
+
+  statusBox.innerText =
+    "Uploading image...";
 
   const payload = {
 
@@ -583,7 +606,7 @@ async function captureAndUpload() {
 
     km: enteredKm,
 
-    image: imageData,
+    image: capturedImageData,
 
     latitude: latitude,
     longitude: longitude,
@@ -595,9 +618,7 @@ async function captureAndUpload() {
   try {
 
     const response = await fetch(
-
       APPS_SCRIPT_URL,
-
       {
         method: "POST",
         body: JSON.stringify(payload)
@@ -611,23 +632,21 @@ async function captureAndUpload() {
 
       uploadCompleted = true;
 
+      document.getElementById("captureBtn").disabled = true;
+
       document.getElementById("retakeBtn").disabled = true;
+
+      document.getElementById("uploadBtn").disabled = true;
 
       statusBox.innerText =
         currentStage.toUpperCase() +
         " uploaded successfully";
 
-      // ================================================
-      // RESULT UI
-      // ================================================
-
       let html = "";
 
-      html +=
-        "<div class='success-box'>";
+      html += "<div class='success-box'>";
 
-      html +=
-        "<h3>Upload Success</h3>";
+      html += "<h3>Upload Success</h3>";
 
       html +=
         "<p><b>Stage:</b> " +
@@ -646,21 +665,9 @@ async function captureAndUpload() {
         result.mapLink +
         "' target='_blank'>Open Location</a>";
 
-      if (result.traveledMap) {
-
-        html += "<br><br>";
-
-        html +=
-          "<a href='" +
-          result.traveledMap +
-          "' target='_blank'>Open Traveled Route</a>";
-      }
-
       html += "</div>";
 
       resultBox.innerHTML = html;
-
-      disableButtons();
 
     } else {
 
