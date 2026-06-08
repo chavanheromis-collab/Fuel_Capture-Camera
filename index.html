@@ -86,29 +86,31 @@
 
     </div>
 
-        <button
-          id="cameraBtn"
-          onclick="startCamera()"
-        >
-          Open Camera
-        </button>
+      <button
+        id="openBtn"
+        onclick="startCameraAndLocation()"
+      >
+        Open Camera & Location
+      </button>
 
-        <button
-          id="retakeBtn"
-          onclick="retakePhoto()"
-          disabled
-        >
-          Retake Photo
-        </button>
+      <button
+        id="captureBtn"
+        onclick="capturePhoto()"
+        disabled
+      >
+        Take Photo
+      </button>
 
-        <button
-          id="locationBtn"
-          onclick="getLocation()"
-        >
-          Get Location
-        </button>
+      <button
+        id="uploadBtn"
+        onclick="uploadPhoto()"
+        disabled
+      >
+        Upload Photo
+      </button>
+      
 
-        <div class="photo-actions">
+    <div class="photo-actions">
 
       <button
         id="captureBtn"
