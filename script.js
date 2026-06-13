@@ -1,5 +1,5 @@
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbyDfQe8kNi3dw4lU1HRFwY_uyPI2UQAMBkrgMTtMJ2ke-oZjGQrkSlQZT_NiZiAuW8/exec";
+  "https://script.google.com/macros/s/AKfycbwC2yRcS6ytfUVOjOpUezpUHymv3Rhi_UcxNaKrUQzXEoh_FjYsHiyu-wXeiUCJthWH/exec";
 
 // ======================================================
 // ELEMENTS
