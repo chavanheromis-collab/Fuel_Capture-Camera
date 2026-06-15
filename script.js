@@ -35,6 +35,8 @@ let accuracy = "";
 
 let currentRow = "";
 
+let currentSheet = "";
+
 let currentStage = "start";
 
 let currentRequestType = "";
@@ -63,6 +65,9 @@ function getRowFromUrl() {
 
   const params =
     new URLSearchParams(window.location.search);
+
+  currentSheet =
+    params.get("sheet") || "";
 
   return params.get("row");
 }
@@ -156,6 +161,16 @@ async function checkRowBeforeOpen() {
 
   currentRow = getRowFromUrl();
 
+  if (!currentSheet) {
+
+    statusBox.innerText =
+      "Sheet parameter missing.";
+  
+    disableButtons();
+  
+    return;
+  }
+
   updateStageUI();
 
   if (!currentRow) {
@@ -175,15 +190,18 @@ async function checkRowBeforeOpen() {
 
     const response = await fetch(
 
-      APPS_SCRIPT_URL +
-
-      "?action=checkPhotoRow" +
-
-      "&row=" +
-      encodeURIComponent(currentRow) +
-
-      "&stage=" +
-      encodeURIComponent(currentStage)
+        APPS_SCRIPT_URL +
+      
+        "?action=checkPhotoRow" +
+      
+        "&sheet=" +
+        encodeURIComponent(currentSheet) +
+      
+        "&row=" +
+        encodeURIComponent(currentRow) +
+      
+        "&stage=" +
+        encodeURIComponent(currentStage)
     );
 
     const result = await response.json();
@@ -617,6 +635,8 @@ async function uploadPhoto() {
   const payload = {
 
     action: "savePhotoToRow",
+
+    sheet: currentSheet,
 
     row: currentRow,
 
